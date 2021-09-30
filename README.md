@@ -1,3 +1,3 @@
 # License
 
-Undeared is under MIT License
+KmchanServerWeb is under MIT License
