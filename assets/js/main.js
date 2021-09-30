@@ -103,7 +103,6 @@ class mainClass {
         this.camera.position.y = player_move.position.y;
         this.camera.position.z = player_move.position.z;
 
-        mousedata.update();
         this.renderer.render(this.scene, this.camera);
     }
 }
@@ -115,151 +114,12 @@ class player {
         this.speed = 0;
         this.position = {
             x: 0,
-            y: -4500,
+            y: -4000,
             z: 0
         };
         this.euler = new THREE.Euler(0, 0, 0, 'YXZ');
     }
     move(main) {
-        // 移動前の座標をキャッシュ
-        let cache = {
-            x: this.position.x,
-            y: this.position.y,
-            z: this.position.z,
-        };
-        // 方向による移動量の計算
-
-        // _euler.setFromQuaternion(main.camera.quaternion);
-        this.euler.y -= mousedata.x;
-        this.euler.x = Math.max(Math.PI / 2 - Math.PI, Math.min(Math.PI / 2 - 0, this.euler.x - mousedata.y));
-
-        // 移動速度
-        if (keydata.action.sneak)
-            this.speed = 48 / (config.quality.fps / 60);
-        else
-            this.speed = 12 / (config.quality.fps / 60);
-        // 移動
-        if (keydata.action.up && keydata.action.right) {
-            this.position.z -= Math.cos(this.euler.y - Math.PI / 2.5) * this.speed;
-            this.position.x -= Math.sin(this.euler.y - Math.PI / 2.5) * this.speed;
-        } else if (keydata.action.up && keydata.action.left) {
-            this.position.z += Math.cos(this.euler.y - Math.PI / 1.5) * this.speed;
-            this.position.x += Math.sin(this.euler.y - Math.PI / 1.5) * this.speed;
-        } else if (keydata.action.down && keydata.action.right) {
-            this.position.z -= Math.cos(this.euler.y - Math.PI / 1.5) * this.speed;
-            this.position.x -= Math.sin(this.euler.y - Math.PI / 1.5) * this.speed;
-        } else if (keydata.action.down && keydata.action.left) {
-            this.position.z += Math.cos(this.euler.y - Math.PI / 2.5) * this.speed;
-            this.position.x += Math.sin(this.euler.y - Math.PI / 2.5) * this.speed;
-        } else if (keydata.action.up) {
-            this.position.z -= Math.cos(this.euler.y) * this.speed;
-            this.position.x -= Math.sin(this.euler.y) * this.speed;
-        } else if (keydata.action.down) {
-            this.position.z += Math.cos(this.euler.y) * this.speed;
-            this.position.x += Math.sin(this.euler.y) * this.speed;
-        } else if (keydata.action.right) {
-            this.position.z -= Math.cos(this.euler.y - Math.PI / 2) * this.speed;
-            this.position.x -= Math.sin(this.euler.y - Math.PI / 2) * this.speed;
-        } else if (keydata.action.left) {
-            this.position.z += Math.cos(this.euler.y - Math.PI / 2) * this.speed;
-            this.position.x += Math.sin(this.euler.y - Math.PI / 2) * this.speed;
-
-        } else if (keydata.action.rise) {
-            this.position.y += 10 * this.speed;
-        } else if (keydata.action.fall) {
-            this.position.y -= 10 * this.speed;
-        }
-
-        // 当たり判定 x軸
-        {
-            let flag = false;
-            Object.keys(setstage.group).forEach(stage => {
-                if (!setstage.group[stage].y) return;
-                [60, 50, 40, 30, 20, 10, 0].forEach((data_y) => {
-                    [10, 0, -10].forEach((data_x) => {
-                        let TopOverPos = new THREE.Vector3(this.position.x + Math.abs(data_x), this.position.y + data_y, this.position.z + data_x);
-                        let downVect = new THREE.Vector3(-1, 0, 0);
-                        let ray = new THREE.Raycaster(TopOverPos, downVect.normalize());
-                        let objs = ray.intersectObjects(main.group[stage].children, true);
-                        objs.forEach((element) => {
-                            if (this.position.x < element.point.x + Math.abs(data_x))
-                                flag = true;
-                        });
-                    });
-                });
-            });
-            if (flag)
-                this.position.x = cache.x;
-        }
-
-        // 当たり判定 z軸
-        {
-            let flag = false;
-            Object.keys(setstage.group).forEach(stage => {
-                if (!setstage.group[stage].z) return;
-                [60, 50, 40, 30, 20, 10, 0].forEach((data_y) => {
-                    [10, 0, -10].forEach((data_x) => {
-                        let TopOverPos = new THREE.Vector3(this.position.x + data_x, this.position.y + data_y, this.position.z + Math.abs(data_x));
-                        let downVect = new THREE.Vector3(0, 0, -1);
-                        let ray = new THREE.Raycaster(TopOverPos, downVect.normalize());
-                        let objs = ray.intersectObjects(main.group[stage].children, true);
-                        objs.forEach((element) => {
-                            if (this.position.z < element.point.z + Math.abs(data_x))
-                                flag = true;
-                        });
-                    });
-                });
-            });
-            if (flag)
-                this.position.z = cache.z;
-        }
-
-        // 当たり判定 y軸
-
-        {
-            Object.keys(setstage.group).forEach(stage => {
-                if (!setstage.group[stage].y) return;
-                let PlayerHeight = main.camera.position.y - 120;
-                let TopOverPos = new THREE.Vector3(main.camera.position.x, PlayerHeight + 30, main.camera.position.z);
-                let downVect = new THREE.Vector3(0, -1, 0);
-                let ray = new THREE.Raycaster(TopOverPos, downVect.normalize());
-                let preY = PlayerHeight - 10;
-                let objs = ray.intersectObjects(main.group[stage].children, true);
-                objs.forEach((element) => {
-                    if (preY < element.point.y)
-                        preY = element.point.y;
-                });
-                /* 接触点 + 身長 */
-                this.position.y = preY + 120;
-            });
-        }
-
-        /*インタラクト  */
-        {
-
-            const raycaster_for_collision = new THREE.Raycaster();
-            let dir_forward = new THREE.Vector3(0, 0, -1)
-                .applyAxisAngle(new THREE.Vector3(1, 0, 0), main.camera.rotation.x)
-                .applyAxisAngle(new THREE.Vector3(0, 1, 0), main.camera.rotation.y)
-                .applyAxisAngle(new THREE.Vector3(0, 0, 1), main.camera.rotation.z);
-            raycaster_for_collision.set(main.camera.position, dir_forward);
-            let intersects = raycaster_for_collision.intersectObjects(main.scene.children, true);
-            if (intersects.length > 0) {
-                if (keydata.action.instruct)
-                    if (intersects[0].object.$_fn !== undefined) {
-                        intersects[0].object.$_fn();
-                    } else {
-                        console.log(intersects);
-                    }
-            }
-
-
-
-
-
-
-        }
-
         return {
             position: this.position,
             euler: this.euler
@@ -267,32 +127,7 @@ class player {
     }
 }
 
-let playerdata = new player;
-class key {
-    constructor() {
-        this.action = {
-            "up": false,
-            "down": false,
-            "right": false,
-            "left": false,
-            "sneak": false,
-        };
-    }
-}
-class mouse {
-    constructor() {
-        this.x = 0;
-        this.y = 0;
-        this.right = false;
-        this.left = false;
-    }
-    update() {
-        this.x = 0;
-        this.y = 0;
-    }
-}
-let keydata = new key();
-let mousedata = new mouse();
+let playerdata = new player();
 
 
 function render() {
