@@ -61,7 +61,10 @@ class mainClass {
         this.sun.shadow.camera.near = 1000;
         this.sun.shadow.camera.far = 30000;
         this.sun.shadow.bias = -0.005;
-        this.sun.position.set(0, -15000, 0);
+        // this.sun.position.set(0, -15000, 0);
+        this.sun.position.set(10408, 4430, 5000);
+        this.sun.rotation.z = 5;
+
         this.scene.add(this.sun);
 
         this.sun_target = new THREE.Mesh(new THREE.BoxGeometry(0, 0, 0), new THREE.MeshStandardMaterial());
@@ -109,24 +112,52 @@ class mainClass {
 
 class player {
     constructor() {
-        this.reload_time = 0;
-        this.shot_time = 0;
-        this.speed = 0;
+        class _animation {
+            constructor() {
+                this.animations = [];
+            }
+            add(data, to, frame) {
+                this.animations.push({
+                    data: data,
+                    amount: (to - data(0)) / frame,
+                    remain: frame,
+                });
+            }
+            renderer() {
+                this.animations = this.animations.filter((animation) => {
+                    animation.data(animation.amount);
+                    animation.remain -= 1;
+                    return animation.remain > 0;
+                });
+            }
+        }
+        this.animation = new _animation();
+
         this.position = {
-            x: 0,
-            y: -4000,
+            x: -3000,
+            y: -3500,
             z: 0
         };
-        this.euler = new THREE.Euler(0, 0, 0, 'YXZ');
+        this.euler = new THREE.Euler(0.4, 3.14 / 4, 0, 'YXZ');
+
+        this.animation.add((i) => {
+            this.position.x += i;
+            return this.position.x;
+        }, 3000, 1000);
+        this.animation.add((i) => {
+            this.euler.y += i;
+            return this.euler.y;
+        }, -3.14 / 4, 1000);
+
     }
     move(main) {
+        this.animation.renderer();
         return {
             position: this.position,
             euler: this.euler
         };
     }
 }
-
 let playerdata = new player();
 
 
