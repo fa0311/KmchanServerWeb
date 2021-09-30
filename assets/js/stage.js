@@ -7,11 +7,19 @@ var setstage = {
             "load": (scene, event) => {
                 {
                     const model = loader.clone("main");
-                    global = model;
+                    console.log(model);
+
+                    model.children.forEach(function(mesh) {
+                        if (["Grass", "Chest", "Poppy", "Dandelion"].includes(mesh.name))
+                            mesh.visible = false;
+                        else if (mesh.isMesh) {
+                            mesh.receiveShadow = true;
+                            mesh.castShadow = true;
+                        }
+                    });
                     model.scale.set(100, 100, 100);
                     model.position.set(0, -5000, 0);
                     scene.add(model);
-                    setshadow(model);
                 }
             },
             "x": false,
@@ -19,13 +27,4 @@ var setstage = {
             "z": false,
         }
     }
-}
-
-function setshadow(scene) {
-    scene.traverse(function(node) {
-        if (node.isMesh) {
-            node.receiveShadow = true;
-            node.castShadow = true;
-        }
-    });
 }

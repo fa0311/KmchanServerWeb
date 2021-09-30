@@ -39,6 +39,7 @@ class loaderClass {
                         },
                         err => {
                             console.log('An error happened');
+                            console.log(err);
                         }
                     );
             });

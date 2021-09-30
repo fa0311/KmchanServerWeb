@@ -3,7 +3,7 @@ var config = {
     stats: true,
     quality: {
         fps: 60,
-        shadow: 1,
+        shadow: 6,
     },
     keycode: {
         "87": "up",

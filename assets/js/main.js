@@ -15,7 +15,7 @@ class mainClass {
             45,
             0,
             1,
-            10000
+            12000
         );
 
         new EventListener(this.canvas, this.renderer, this.camera);
@@ -33,7 +33,7 @@ class mainClass {
             document.body.appendChild(this.stats.dom);
         }
         this.camera.y_speed = 0;
-        this.camera.position.set(0, 100, 0);
+        this.camera.position.set(0, 0, 0);
 
         this.target = new THREE.Group();
         this.scene.add(this.target);
@@ -49,51 +49,52 @@ class mainClass {
         });
 
 
-
-        this.sun = new THREE.SpotLight(0xFFFFFF, 1, 10000, Math.PI, 0, 0.1);
-        this.sun.castShadow = true;
-        this.sun.shadow.mapSize.width = 2048;
-        this.sun.shadow.mapSize.height = 2048;
-        this.sun.shadow.camera.top = 170;
-        this.sun.shadow.camera.bottom = -70;
-        this.sun.shadow.camera.left = -150;
-        this.sun.shadow.camera.right = 150;
-        this.sun.shadow.camera.near = 25;
-        this.sun.shadow.camera.far = 250;
-        this.sun.shadow.bias = -0.005;
-        this.sun.position.x = 0;
-        this.sun.position.y = 1000;
-        this.sun.position.z = 0;
+        this.sun = new THREE.DirectionalLight(0xffffff, 1);
         this.scene.add(this.sun);
+        this.sun.castShadow = true;
+        this.sun.shadow.mapSize.width = 2048 * config.quality.shadow;
+        this.sun.shadow.mapSize.height = 2048 * config.quality.shadow;
+        this.sun.shadow.camera.top = 7000;
+        this.sun.shadow.camera.bottom = -7000;
+        this.sun.shadow.camera.left = 7000;
+        this.sun.shadow.camera.right = -7000;
+        this.sun.shadow.camera.near = 1000;
+        this.sun.shadow.camera.far = 30000;
+        this.sun.shadow.bias = -0.005;
+        this.sun.position.set(0, -15000, 0);
+        this.scene.add(this.sun);
+
         this.sun_target = new THREE.Mesh(new THREE.BoxGeometry(0, 0, 0), new THREE.MeshStandardMaterial());
+        this.sun_target.position.set(0, -4500, 0);
         this.scene.add(this.sun_target);
         this.sun.target = this.sun_target;
 
 
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.05);
+        this.scene.add(ambientLight);
 
-        this.light = new THREE.SpotLight(0xFFFFFF, 1, 1, Math.PI, 0, 0.1);
-        this.light.shadow.mapSize.width = 2048;
-        this.light.shadow.mapSize.height = 2048;
-        this.light.shadow.camera.top = 170;
-        this.light.shadow.camera.bottom = -70;
-        this.light.shadow.camera.left = -150;
-        this.light.shadow.camera.right = 150;
-        this.light.shadow.camera.near = 25;
-        this.light.shadow.camera.far = 250;
-        this.light.shadow.bias = -0.005;
-        this.scene.add(this.light);
-        this.light_target = new THREE.Mesh(new THREE.BoxGeometry(0, 0, 0), new THREE.MeshStandardMaterial());
-        this.scene.add(this.light_target);
-        this.light.target = this.light_target;
+        if (config.debug) {
+
+            const helper = new THREE.CameraHelper(this.sun.shadow.camera);
+            this.scene.add(helper);
 
 
-        setTimeout(render, 1000);
+            const helper_ = new THREE.DirectionalLightHelper(this.sun);
+            this.scene.add(helper_);
+        }
+
+        setTimeout(render, 0);
     }
     view() {
 
-        this.sun_target.translateOnAxis(new THREE.Vector3(0, 0, -1), 100);
-        this.sun_target.rotation.z += 0.01;
-
+        this.sun.position.z = 0;
+        this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 / config.quality.fps * 60);
+        this.sun.position.z = 5000;
+        this.sun.rotation.z += 0.001 / config.quality.fps * 60;
+        if (this.sun.position.y < -2000)
+            this.sun.intensity = 1 + (this.sun.position.y + 2000) / 4000;
+        if (this.sun.intensity < 0)
+            this.sun.intensity = 0;
 
 
         let player_move = playerdata.move(this);
@@ -103,26 +104,6 @@ class mainClass {
         this.camera.position.z = player_move.position.z;
 
         mousedata.update();
-
-        this.light.rotation.z = this.camera.rotation.z;
-        this.light.rotation.x = this.camera.rotation.x;
-        this.light.rotation.y = this.camera.rotation.y;
-        this.light.position.z = this.camera.position.z;
-        this.light.position.x = this.camera.position.x;
-        this.light.position.y = this.camera.position.y;
-        // light.translateOnAxis(new THREE.Vector3(0, -1, 0), 80);
-        this.light_target.rotation.z = this.camera.rotation.z;
-        this.light_target.rotation.x = this.camera.rotation.x;
-        this.light_target.rotation.y = this.camera.rotation.y;
-        this.light_target.position.z = this.camera.position.z;
-        this.light_target.position.x = this.camera.position.x;
-        this.light_target.position.y = this.camera.position.y;
-        this.light_target.translateOnAxis(new THREE.Vector3(0, 0, -1), 100);
-
-
-        this.eventobj.children.forEach((element) => {
-            element.event(this.camera);
-        });
         this.renderer.render(this.scene, this.camera);
     }
 }
@@ -134,10 +115,10 @@ class player {
         this.speed = 0;
         this.position = {
             x: 0,
-            y: 0,
+            y: -4500,
             z: 0
         };
-        this.euler = new THREE.Euler(0, 0, 0, 'YXZ');;
+        this.euler = new THREE.Euler(0, 0, 0, 'YXZ');
     }
     move(main) {
         // 移動前の座標をキャッシュ
@@ -154,9 +135,9 @@ class player {
 
         // 移動速度
         if (keydata.action.sneak)
-            this.speed = 6 / (config.quality.fps / 60);
+            this.speed = 48 / (config.quality.fps / 60);
         else
-            this.speed = 3 / (config.quality.fps / 60);
+            this.speed = 12 / (config.quality.fps / 60);
         // 移動
         if (keydata.action.up && keydata.action.right) {
             this.position.z -= Math.cos(this.euler.y - Math.PI / 2.5) * this.speed;
