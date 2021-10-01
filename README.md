@@ -2,7 +2,7 @@
 
 KmchanServer のサイト<br>
 PC 推奨<br>
-![KmchanServerWeb](https://fa0311.github.io/KmchanServerWeb/)
+[KmchanServerWeb](https://fa0311.github.io/KmchanServerWeb/)
 
 # License
 
