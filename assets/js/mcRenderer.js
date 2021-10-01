@@ -55,10 +55,10 @@ class mcRenderer {
         this.sun.shadow.bias = -0.005;
         this.sun.position.set(0, -15000, 0);
         this._scene.add(this.sun);
-        this.sun_target = new THREE.Mesh(new THREE.BoxGeometry(0, 0, 0), new THREE.MeshStandardMaterial());
-        this.sun_target.position.set(0, -4500, 0);
-        this._scene.add(this.sun_target);
-        this.sun.target = this.sun_target;
+        this.sunTarget = new THREE.Mesh(new THREE.BoxGeometry(0, 0, 0), new THREE.MeshStandardMaterial());
+        this.sunTarget.position.set(0, -4500, 0);
+        this._scene.add(this.sunTarget);
+        this.sun.target = this.sunTarget;
         const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.05);
         this._scene.add(ambientLight);
 
@@ -71,14 +71,14 @@ class mcRenderer {
     }
     view() {
 
-        this.sun.position.z = 0;
         this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 / config.quality.fps * 60);
-        this.sun.position.z = 5000;
         this.sun.rotation.z += 0.001 / config.quality.fps * 60;
-        if (this.sun.position.y < -2000)
-            this.sun.intensity = 1 + (this.sun.position.y + 2000) / 4000;
+
+        this.sun.intensity = (this.sun.position.y + 4000) / 4000;
         if (this.sun.intensity < 0)
             this.sun.intensity = 0;
+        if (this.sun.intensity > 1)
+            this.sun.intensity = 1;
 
         this.animation.renderer();
 

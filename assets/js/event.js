@@ -12,6 +12,7 @@ class EventListener {
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(width, height);
         this.camera.aspect = width / height;
+        this.camera.fov = height / width * 45 + 30;
         this.camera.updateProjectionMatrix();
     }
 }

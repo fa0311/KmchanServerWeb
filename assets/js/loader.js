@@ -5,8 +5,6 @@ class loaderClass {
         this.loadedfn = loadedfn;
         this.models = {};
         Object.keys(modelpath).forEach(name => {
-
-
             new THREE.MTLLoader().load(modelpath[name] + ".mtl", materials => {
                 materials.preload();
                 new THREE.OBJLoader()
@@ -25,10 +23,10 @@ class loaderClass {
                             this.check();
                         },
                         xhr => {
-                            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                            document.querySelector("#loading-percent").textContent = Math.floor(xhr.loaded / xhr.total * 100) + "%";
                         },
                         err => {
-                            console.log('An error happened');
+                            document.querySelector("#loading-percent").textContent = "エラーが発生しました";
                             console.log(err);
                         }
                     );

@@ -1,4 +1,17 @@
-  body {
-      margin: 0;
-      overflow: hidden;
-  }
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+p {
+    margin: 0px;
+}
+
+#loading {
+    position: absolute;
+    left: 0;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+}
