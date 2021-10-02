@@ -5,6 +5,7 @@ var config = {
         fps: 60,
         shadow: 2,
         antialias: false, // MSAA or FXAA
+        ambientocclusion: false, //SSAO
         anisotropy: 1,
     },
 }

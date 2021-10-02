@@ -21,7 +21,7 @@ class mcRenderer {
         /* ポストプロセス */
         this.composer = new THREE.EffectComposer(this.renderer);
         const renderPass = new THREE.RenderPass(this._scene, this.camera);
-        const copyPass = new THREE.ShaderPass(THREE.CopyShader);
+        this.composer.addPass(renderPass);
         /* アンチエイリアス */
         if (config.quality.antialias === "FXAA")
             this.antialiasPass = new THREE.ShaderPass(THREE.FXAAShader);
@@ -31,10 +31,17 @@ class mcRenderer {
         else if (config.quality.antialias === "SSAA")
             this.antialiasPass = new THREE.ShaderPass(THREE.SSAARenderPass);
         */
-
-        this.composer.addPass(this.antialiasPass);
         if (["FXAA"].includes(config.quality.antialias))
-            this.composer.addPass(renderPass);
+            this.composer.addPass(this.antialiasPass);
+        /* アンビエントオクルージョン */
+        if (config.quality.ambientocclusion === "SSAO") {
+            this.ambientocclusionPass = new THREE.ShaderPass(THREE.SSAOPass);
+            this.ambientocclusionPass.kernelRadius = 16;
+        }
+        if (["SSAO"].includes(config.quality.antialias))
+            this.composer.addPass(this.ambientocclusionPass);
+        /* 出力 */
+        const copyPass = new THREE.ShaderPass(THREE.CopyShader);
         this.composer.addPass(copyPass);
 
 
