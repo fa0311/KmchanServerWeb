@@ -11,6 +11,7 @@ class loaderClass {
                     .setMaterials(materials)
                     .load(modelpath[name] + ".obj", model => {
                             let texture = new THREE.TextureLoader().load(modelpath[name] + "-RGBA.png");
+                            texture.anisotropy = config.quality.anisotropy;
                             let textureAlpha = new THREE.TextureLoader().load(modelpath[name] + "-Alpha.png");
                             model.traverse(function(child) {
                                 if (child instanceof THREE.Mesh) {

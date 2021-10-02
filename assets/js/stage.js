@@ -4,7 +4,6 @@ var stagedata = {
         "load": (scene, event) => {
             {
                 const model = loader.clone("main");
-                console.log(model.children[0].material.reflectivity);
                 model.children.forEach(function(mesh) {
                     if (["Campfire"].includes(mesh.name))
                         mesh.material.emissive = {
