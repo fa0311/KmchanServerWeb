@@ -1,22 +1,51 @@
 class mcRenderer {
     constructor(canvas, setstage) {
-        /* 定義 */
-        this.animation = new _animation();
+        /* 引数受け取り */
         this._canvas = canvas;
-        this.renderer = new THREE.WebGLRenderer({
-            canvas: this._canvas,
-            antialias: config.quality.antialias
-        });
-        this.renderer.shadowMap.enabled = true;
+        /* シーン */
         this._scene = new THREE.Scene();
+        /* カメラ */
         this.camera = new THREE.PerspectiveCamera(
             45,
-            0,
+            this._canvas.offsetWidth / this._canvas.offsetHeight,
             1,
             12000
         );
+        /* レンダラー */
+        this.renderer = new THREE.WebGLRenderer({
+            canvas: this._canvas,
+            antialias: config.quality.antialias === "MSAA",
+        });
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.shadowMap.enabled = true;
+        /* ポストプロセス */
+        this.composer = new THREE.EffectComposer(this.renderer);
+        const renderPass = new THREE.RenderPass(this._scene, this.camera);
+        this.composer.addPass(renderPass);
+        /* アンチエイリアス */
+        if (config.quality.antialias === "FXAA") {
+            this.antialiasPass = new THREE.ShaderPass(THREE.FXAAShader);
+        } else if (config.quality.antialias === "SMAA")
+            this.antialiasPass = new THREE.ShaderPass(THREE.SMAABlendShader);
+        if (["FXAA", "SMAA"].includes(config.quality.antialias))
+            this.composer.addPass(this.antialiasPass);
+        console.log(this.antialiasPass);
 
+        /*
+
+            THREE.SMAABlendShader = SMAABlendShader;
+        	THREE.SMAAEdgesShader = SMAAEdgesShader;
+        	THREE.SMAAWeightsShader = SMAAWeightsShader;
+
+        */
+
+
+        /* イベントリスナー */
         new EventListener(this._canvas, this.renderer, this.camera);
+        this.EventListener();
+
+        /* アニメーション */
+        this.animation = new _animation();
 
         if (config.stats) {
             this.stats = new Stats();
@@ -79,8 +108,10 @@ class mcRenderer {
             this.sun.intensity = 1;
 
         this.animation.renderer();
-
+        /*
         this.renderer.render(this._scene, this.camera);
+        */
+        this.composer.render();
     }
     mcRendererParent() {
         if (config.stats) {
@@ -92,6 +123,17 @@ class mcRenderer {
         this.view();
         if (config.stats) {
             this.stats.end();
+        }
+    }
+    EventListener() {
+        this.resizefunc();
+        window.addEventListener('resize', () => this.resizefunc());
+    }
+    resizefunc() {
+        this.composer.setSize(this._canvas.offsetWidth, this._canvas.offsetHeight);
+        if (["FXAA", "SMAA"].includes(config.quality.antialias)) {
+            this.antialiasPass.material.uniforms.resolution.value.x = 1 / (this._canvas.offsetWidth * this.renderer.getPixelRatio());
+            this.antialiasPass.material.uniforms.resolution.value.y = 1 / (this._canvas.offsetHeight * this.renderer.getPixelRatio());
         }
     }
 }

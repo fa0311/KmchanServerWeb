@@ -4,6 +4,10 @@ var config = {
     quality: {
         fps: 60,
         shadow: 2,
-        antialias: false,
+        antialias: "MSAA", // MSAA or FXAA or SMAA
     },
 }
+
+new URL(window.location.href).searchParams.forEach(function(value, key) {
+    config.quality[key] = value;
+});
