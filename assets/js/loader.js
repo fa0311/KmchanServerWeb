@@ -35,8 +35,14 @@ class loaderClass {
     }
     check() {
         this.loaded++;
-        if (this.loaded == this.len)
-            this.loadedfn();
+        if (this.loaded == this.len) {
+            document.querySelector("#loading").innerHTML = ""
+            try {
+                this.loadedfn();
+            } catch (err) {
+                console.error(err);
+            }
+        }
     }
     sceneClone(name) {
         let clone = this.models[name].scene.clone();

@@ -5,7 +5,7 @@ class mcRenderer {
         this._canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({
             canvas: this._canvas,
-            antialias: true
+            antialias: config.quality.antialias
         });
         this.renderer.shadowMap.enabled = true;
         this._scene = new THREE.Scene();
@@ -65,19 +65,17 @@ class mcRenderer {
         if (config.debug) {
             const helper = new THREE.CameraHelper(this.sun.shadow.camera);
             this._scene.add(helper);
-            const helper_ = new THREE.DirectionalLightHelper(this.sun);
-            this._scene.add(helper_);
         }
     }
     view() {
-
         this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 / config.quality.fps * 60);
         this.sun.rotation.z += 0.001 / config.quality.fps * 60;
+
 
         this.sun.intensity = (this.sun.position.y + 4000) / 4000;
         if (this.sun.intensity < 0)
             this.sun.intensity = 0;
-        if (this.sun.intensity > 1)
+        else if (this.sun.intensity > 1)
             this.sun.intensity = 1;
 
         this.animation.renderer();
@@ -108,6 +106,9 @@ class _animation {
             amount: (to - data(0)) / frame,
             remain: frame,
         });
+    }
+    reset() {
+        this.animations = [];
     }
     renderer() {
         this.animations = this.animations.filter((animation) => {

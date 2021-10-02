@@ -1,8 +1,9 @@
 var config = {
-    debug: false,
+    debug: true,
     stats: false,
     quality: {
         fps: 60,
-        shadow: 1,
+        shadow: 2,
+        antialias: false,
     },
 }
