@@ -21,23 +21,21 @@ class mcRenderer {
         /* ポストプロセス */
         this.composer = new THREE.EffectComposer(this.renderer);
         const renderPass = new THREE.RenderPass(this._scene, this.camera);
-        this.composer.addPass(renderPass);
+        const copyPass = new THREE.ShaderPass(THREE.CopyShader);
         /* アンチエイリアス */
-        if (config.quality.antialias === "FXAA") {
+        if (config.quality.antialias === "FXAA")
             this.antialiasPass = new THREE.ShaderPass(THREE.FXAAShader);
-        } else if (config.quality.antialias === "SMAA")
-            this.antialiasPass = new THREE.ShaderPass(THREE.SMAABlendShader);
-        if (["FXAA", "SMAA"].includes(config.quality.antialias))
-            this.composer.addPass(this.antialiasPass);
-        console.log(this.antialiasPass);
-
         /*
-
-            THREE.SMAABlendShader = SMAABlendShader;
-        	THREE.SMAAEdgesShader = SMAAEdgesShader;
-        	THREE.SMAAWeightsShader = SMAAWeightsShader;
-
+        else if (config.quality.antialias === "SMAA")
+            this.antialiasPass = new THREE.ShaderPass(THREE.SMAABlendShader); // SMAABlendShader SMAAEdgesShader SMAAWeightsShader
+        else if (config.quality.antialias === "SSAA")
+            this.antialiasPass = new THREE.ShaderPass(THREE.SSAARenderPass);
         */
+
+        this.composer.addPass(this.antialiasPass);
+        if (["FXAA"].includes(config.quality.antialias))
+            this.composer.addPass(renderPass);
+        this.composer.addPass(copyPass);
 
 
         /* イベントリスナー */
@@ -131,7 +129,7 @@ class mcRenderer {
     }
     resizefunc() {
         this.composer.setSize(this._canvas.offsetWidth, this._canvas.offsetHeight);
-        if (["FXAA", "SMAA"].includes(config.quality.antialias)) {
+        if (["FXAA"].includes(config.quality.antialias)) {
             this.antialiasPass.material.uniforms.resolution.value.x = 1 / (this._canvas.offsetWidth * this.renderer.getPixelRatio());
             this.antialiasPass.material.uniforms.resolution.value.y = 1 / (this._canvas.offsetHeight * this.renderer.getPixelRatio());
         }

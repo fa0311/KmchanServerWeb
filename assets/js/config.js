@@ -4,8 +4,8 @@ var config = {
     quality: {
         fps: 60,
         shadow: 2,
-        antialias: "MSAA", // MSAA or FXAA or SMAA
-        anisotropy: 16,
+        antialias: false, // MSAA or FXAA
+        anisotropy: 1,
     },
 }
 
