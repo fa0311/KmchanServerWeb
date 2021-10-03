@@ -105,9 +105,8 @@ class mcRenderer {
         }
     }
     view() {
-        this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 0.2 / this._delay);
-        this.sun.rotation.z += 0.000016 / this._delay;
-
+        this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 * this._delay / 0.16);
+        this.sun.rotation.z += 0.001 * this._delay / 0.16;
 
         this.sun.intensity = (this.sun.position.y + 4000) / 4000;
         if (this.sun.intensity < 0)
