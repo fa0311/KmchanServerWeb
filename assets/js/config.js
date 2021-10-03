@@ -10,6 +10,6 @@ var config = {
     },
 }
 
-new URL(window.location.href).searchParams.forEach(function(value, key) {
+new URL(window.location.href).searchParams.forEach(function (value, key) {
     config.quality[key] = value;
 });

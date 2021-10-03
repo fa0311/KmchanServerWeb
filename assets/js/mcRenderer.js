@@ -67,7 +67,8 @@ class mcRenderer {
         }
 
         this.camera.position.set(0, 0, 0);
-
+        this._clock = new THREE.Clock();
+        this._clock.getDelta();
         this._group = {};
         Object.keys(setstage).forEach(name => {
             this._group[name] = new THREE.Group();
@@ -102,8 +103,8 @@ class mcRenderer {
         }
     }
     view() {
-        this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 / config.quality.fps * 60);
-        this.sun.rotation.z += 0.001 / config.quality.fps * 60;
+        this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 0.2 / this._delay);
+        this.sun.rotation.z += 0.000016 / this._delay;
 
 
         this.sun.intensity = (this.sun.position.y + 4000) / 4000;
@@ -112,23 +113,20 @@ class mcRenderer {
         else if (this.sun.intensity > 1)
             this.sun.intensity = 1;
 
-        this.animation.renderer();
+        this.animation.renderer(this._delay);
         /*
         this.renderer.render(this._scene, this.camera);
         */
         this.composer.render();
     }
     mcRendererParent() {
-        if (config.stats) {
+        if (config.stats)
             this.stats.begin();
-        }
-        setTimeout(() => {
-            this.mcRendererParent()
-        }, 1000 / config.quality.fps);
+        this._delay = this._clock.getDelta();
+        setTimeout(() => this.mcRendererParent(), 1000 / config.quality.fps);
         this.view();
-        if (config.stats) {
+        if (config.stats)
             this.stats.end();
-        }
     }
     EventListener() {
         this.resizefunc();
@@ -147,20 +145,21 @@ class _animation {
     constructor() {
         this.animations = [];
     }
-    add(data, to, frame) {
+    add(data, to, sec) {
         this.animations.push({
             data: data,
-            amount: (to - data(0)) / frame,
-            remain: frame,
+            amount: (to - data(0)),
+            movement: sec,
+            remain: sec,
         });
     }
     reset() {
         this.animations = [];
     }
-    renderer() {
+    renderer(delay) {
         this.animations = this.animations.filter((animation) => {
-            animation.data(animation.amount);
-            animation.remain -= 1;
+            animation.data(animation.amount / animation.movement * delay);
+            animation.remain -= delay;
             return animation.remain > 0;
         });
     }
