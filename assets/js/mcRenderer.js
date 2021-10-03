@@ -51,6 +51,8 @@ class mcRenderer {
 
         /* アニメーション */
         this.animation = new _animation();
+        this.requestAnimationFrame = () => {}
+
 
         if (config.stats) {
             this.stats = new Stats();
@@ -112,7 +114,7 @@ class mcRenderer {
             this.sun.intensity = 0;
         else if (this.sun.intensity > 1)
             this.sun.intensity = 1;
-
+        this.requestAnimationFrame();
         this.animation.renderer(this._delay);
         /*
         this.renderer.render(this._scene, this.camera);

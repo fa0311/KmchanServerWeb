@@ -44,6 +44,5 @@ function main() {
         canvas.animation.add((i) => canvas.camera.rotation.y += i, -0.2, 3);
         canvas.animation.add((i) => canvas.camera.rotation.z += i, -2.9, 3);
     };
-
     setTimeout(() => canvas.mcRendererParent(), 0);
 }
