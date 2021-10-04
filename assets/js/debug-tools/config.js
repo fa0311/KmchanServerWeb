@@ -8,4 +8,5 @@ var keycode = {
     "69": "instruct",
     "38": "rise",
     "40": "fall",
+    "79": "output"
 }

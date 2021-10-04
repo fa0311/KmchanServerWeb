@@ -1,5 +1,5 @@
 window.addEventListener("DOMContentLoaded",
-    function () {
+    function() {
         loader = new loaderClass({
             "main": "assets/models/main/main",
         }, main);
@@ -10,7 +10,7 @@ function main() {
     canvas.sun.position.set(12000, -4000, 5000);
     canvas.sun.rotation.set(0, 0, 1.45);
     canvas.walk = new walk();
-    canvas.requestAnimationFrame = function () {
+    canvas.requestAnimationFrame = function() {
         let player_move = this.walk.move(this._delay);
         this.camera.quaternion.setFromEuler(player_move.euler);
         this.camera.position.x = player_move.position.x;

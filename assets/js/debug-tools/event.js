@@ -51,9 +51,10 @@ class EventListener {
     }
     keydownfunc(event) {
         let action = keycode[String(event.keyCode)];
-        console.log(event.keyCode);
-        if (action === undefined)
+        if (action === undefined) {
+            console.log(event.keyCode);
             return
+        }
         keydata.action[action] = true;
     }
     keyupfunc(event) {
