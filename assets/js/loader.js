@@ -11,6 +11,7 @@ class loaderClass {
                     .setMaterials(materials)
                     .load(modelpath[name] + ".obj", model => {
                             let texture = new THREE.TextureLoader().load(modelpath[name] + "-RGBA.png");
+                            texture.anisotropy = config.quality.anisotropy;
                             let textureAlpha = new THREE.TextureLoader().load(modelpath[name] + "-Alpha.png");
                             model.traverse(function(child) {
                                 if (child instanceof THREE.Mesh) {
@@ -35,8 +36,14 @@ class loaderClass {
     }
     check() {
         this.loaded++;
-        if (this.loaded == this.len)
-            this.loadedfn();
+        if (this.loaded == this.len) {
+            document.querySelector("#loading").innerHTML = ""
+            try {
+                this.loadedfn();
+            } catch (err) {
+                console.error(err);
+            }
+        }
     }
     sceneClone(name) {
         let clone = this.models[name].scene.clone();
