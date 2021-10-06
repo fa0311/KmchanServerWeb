@@ -47,18 +47,20 @@ class walk {
         } else if (keydata.action.fall) {
             this.position.y -= 3 * this.speed;
         } else if (keydata.action.output) {
+            /*
             const box = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshNormalMaterial());
             box.quaternion.setFromEuler(this.euler);
+            */
             console.log({
                 position: {
                     x: this.position.x,
                     y: this.position.y,
                     z: this.position.z
                 },
-                rotation: {
-                    x: box.rotation.x,
-                    y: box.rotation.y,
-                    z: box.rotation.z
+                euler: {
+                    x: this.euler.x,
+                    y: this.euler.y,
+                    z: this.euler.z
                 }
             });
         }
