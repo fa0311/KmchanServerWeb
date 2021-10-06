@@ -51,6 +51,7 @@ class mcRenderer {
 
         /* アニメーション */
         this.animation = new _animation();
+        this.animationRotation = new _animationRotation();
         this.requestAnimationFrame = () => {}
 
 
@@ -105,16 +106,22 @@ class mcRenderer {
         }
     }
     view() {
-        this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 * this._delay / 0.16);
-        this.sun.rotation.z += 0.001 * this._delay / 0.16;
+        if (this.sun.position.y > -3000) {
+            this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 * this._delay / 0.16);
+            this.sun.rotation.z += 0.001 * this._delay / 0.16;
+        } else {
+            this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 * this._delay / 0.04);
+            this.sun.rotation.z += 0.001 * this._delay / 0.04;
+        }
 
-        this.sun.intensity = (this.sun.position.y + 4000) / 4000;
+        this.sun.intensity = (this.sun.position.y + 3000) / 4000;
         if (this.sun.intensity < 0)
             this.sun.intensity = 0;
         else if (this.sun.intensity > 1)
             this.sun.intensity = 1;
         this.requestAnimationFrame();
         this.animation.renderer(this._delay);
+        this.animationRotation.renderer(this._delay);
         /*
         this.renderer.render(this._scene, this.camera);
         */
@@ -149,7 +156,7 @@ class _animation {
     add(data, to, sec) {
         this.animations.push({
             data: data,
-            amount: (to - data(0)),
+            amount: to - data(0),
             movement: sec,
             remain: sec,
         });
@@ -160,6 +167,40 @@ class _animation {
     renderer(delay) {
         this.animations = this.animations.filter((animation) => {
             animation.data(animation.amount / animation.movement * delay);
+            animation.remain -= delay;
+            return animation.remain > 0;
+        });
+    }
+}
+
+class _animationRotation {
+    constructor() {
+        this.animations = [];
+    }
+    add(data, to, sec) {
+        let _euler = new THREE.Euler(0, 0, 0, 'YXZ');
+        _euler.setFromQuaternion(data);
+
+        this.animations.push({
+            data: data,
+            amountX: to.x - _euler.x,
+            amountY: to.y - _euler.y,
+            amountZ: to.z - _euler.z,
+            movement: sec,
+            remain: sec,
+            a: 0,
+        });
+    }
+    reset() {
+        this.animations = [];
+    }
+    renderer(delay) {
+        this.animations = this.animations.filter((animation) => {
+            let _euler = new THREE.Euler(0, 0, 0, 'YXZ');
+            _euler.setFromQuaternion(animation.data);
+            _euler.x += animation.amountX / animation.movement * delay;
+            _euler.y += animation.amountY / animation.movement * delay;
+            animation.data.setFromEuler(_euler);
             animation.remain -= delay;
             return animation.remain > 0;
         });

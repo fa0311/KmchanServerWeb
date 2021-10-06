@@ -1,5 +1,5 @@
 window.addEventListener("DOMContentLoaded",
-    function () {
+    function() {
         loader = new loaderClass({
             "main": "assets/models/main/main",
         }, main);
@@ -17,32 +17,78 @@ function main() {
     canvas.animation.add((i) => canvas.camera.position.z += i, 7000, 10);
     document.getElementById('debug-1').onclick = () => {
         canvas.animation.reset();
+        canvas.animationRotation.reset();
         canvas.animation.add((i) => canvas.camera.position.x += i, 0, 3);
         canvas.animation.add((i) => canvas.camera.position.y += i, -780, 3);
         canvas.animation.add((i) => canvas.camera.position.z += i, 7000, 3);
-        canvas.animation.add((i) => canvas.camera.rotation.x += i, 0, 3);
-        canvas.animation.add((i) => canvas.camera.rotation.y += i, 0, 3);
-        canvas.animation.add((i) => canvas.camera.rotation.z += i, 0, 3);
+        canvas.animationRotation.add(canvas.camera.quaternion, new THREE.Euler(0, 0, 0, 'YXZ'), 3);
     };
     document.getElementById('debug-2').onclick = () => {
         canvas.animation.reset();
-        canvas.animation.add((i) => canvas.camera.position.x += i, 780, 3);
-        canvas.animation.add((i) => canvas.camera.position.y += i, -4500, 3);
-        canvas.animation.add((i) => canvas.camera.position.z += i, 18, 3);
-        canvas.animation.add((i) => canvas.camera.rotation.x += i, 0.18, 3);
-        canvas.animation.add((i) => canvas.camera.rotation.y += i, 0.37, 3);
-        canvas.animation.add((i) => canvas.camera.rotation.z += i, -0.06, 3);
+        canvas.animationRotation.reset();
+        canvas.animation.add((i) => canvas.camera.position.x += i, 622, 3);
+        canvas.animation.add((i) => canvas.camera.position.y += i, -4300, 3);
+        canvas.animation.add((i) => canvas.camera.position.z += i, -558, 3);
+        canvas.animationRotation.add(canvas.camera.quaternion, new THREE.Euler(0.1, 0.4, 0, 'YXZ'), 3);
     };
 
     document.getElementById('debug-3').onclick = () => {
         canvas.animation.reset();
+        canvas.animationRotation.reset();
         canvas.animation.add((i) => canvas.camera.position.x += i, -230, 3);
-        canvas.animation.add((i) => canvas.camera.position.y += i, -3800, 3);
+        canvas.animation.add((i) => canvas.camera.position.y += i, -4200, 3);
         canvas.animation.add((i) => canvas.camera.position.z += i, 400, 3);
+        canvas.animationRotation.add(canvas.camera.quaternion, new THREE.Euler(-0.1, -2.78, 0, 'YXZ'), 3);
+    };
 
-        canvas.animation.add((i) => canvas.camera.rotation.x += i, -2.5, 3);
-        canvas.animation.add((i) => canvas.camera.rotation.y += i, -0.2, 3);
-        canvas.animation.add((i) => canvas.camera.rotation.z += i, -2.9, 3);
+    document.getElementById('debug-4').onclick = () => {
+        canvas.animation.reset();
+        canvas.animationRotation.reset();
+        canvas.animation.add((i) => canvas.camera.position.x += i, 3070, 3);
+        canvas.animation.add((i) => canvas.camera.position.y += i, -4380, 3);
+        canvas.animation.add((i) => canvas.camera.position.z += i, -670, 3);
+        canvas.animationRotation.add(canvas.camera.quaternion, new THREE.Euler(0.05, -2.09, 0, 'YXZ'), 3);
+    };
+    document.getElementById('debug-5').onclick = () => {
+        canvas.animation.reset();
+        canvas.animationRotation.reset();
+        canvas.animation.add((i) => canvas.camera.position.x += i, 580, 3);
+        canvas.animation.add((i) => canvas.camera.position.y += i, -4530, 3);
+        canvas.animation.add((i) => canvas.camera.position.z += i, 2400, 3);
+        canvas.animationRotation.add(canvas.camera.quaternion, new THREE.Euler(-0.18, 2.48, 0, 'YXZ'), 3);
+    };
+    document.getElementById('debug-6').onclick = () => {
+        canvas.animation.reset();
+        canvas.animationRotation.reset();
+        canvas.animation.add((i) => canvas.camera.position.x += i, 1470, 3);
+        canvas.animation.add((i) => canvas.camera.position.y += i, -3230, 3);
+        canvas.animation.add((i) => canvas.camera.position.z += i, -2600, 3);
+        canvas.animationRotation.add(canvas.camera.quaternion, new THREE.Euler(-0.28, -0.74, 0, 'YXZ'), 3);
+    };
+    document.getElementById('debug-7').onclick = () => {
+        canvas.animation.reset();
+        canvas.animationRotation.reset();
+        canvas.animation.add((i) => canvas.camera.position.x += i, -1150, 3);
+        canvas.animation.add((i) => canvas.camera.position.y += i, -3500, 3);
+        canvas.animation.add((i) => canvas.camera.position.z += i, -3700, 3);
+        canvas.animationRotation.add(canvas.camera.quaternion, new THREE.Euler(0.05, -1.11, 0, 'YXZ'), 3);
+    };
+    document.getElementById('debug-8').onclick = () => {
+        canvas.animation.reset();
+        canvas.animationRotation.reset();
+        canvas.animation.add((i) => canvas.camera.position.x += i, -1340, 3);
+        canvas.animation.add((i) => canvas.camera.position.y += i, -4580, 3);
+        canvas.animation.add((i) => canvas.camera.position.z += i, 782, 3);
+        canvas.animationRotation.add(canvas.camera.quaternion, new THREE.Euler(0.36, 2.16, 0, 'YXZ'), 3);
     };
     setTimeout(() => canvas.mcRendererParent(), 0);
+    /*
+        function quaternion_x(i) {+
+            let euler = new THREE.Euler(0, 0, 0, 'YXZ');
+            euler.setFromQuaternion(canvas.camera.quaternion);
+            euler.x += i;
+            canvas.camera.quaternion.setFromEuler(euler);
+            return canvas.camera.quaternion.x;
+        }
+    */
 }
