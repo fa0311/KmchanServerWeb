@@ -6,7 +6,6 @@ var stagedata = {
                 const model = loader.clone("main");
                 model.children.forEach(function(mesh) {
                     // mesh.material.side = THREE.DoubleSide;
-                    console.log(mesh);
 
                     if (["Stationary_Water"].includes(mesh.name)) {
                         mesh.material.transparent = true;

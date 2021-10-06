@@ -17,9 +17,12 @@ p {
 }
 
 .fixed {
-    background-color: #ffffff;
+    color: #ffffff;
     position: fixed;
-    top: 0px;
-    right: 0px;
+    bottom: 0px;
+    left: 0px;
     padding: 10px;
+    width: 100vw;
+    display: flex;
+    justify-content: space-around;
 }
