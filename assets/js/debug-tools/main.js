@@ -7,8 +7,6 @@ window.addEventListener("DOMContentLoaded",
 
 function main() {
     canvas = new mcRenderer(document.querySelector("#canvas"), stagedata);
-    canvas.sun.position.set(12000, -4000, 5000);
-    canvas.sun.rotation.set(0, 0, 1.45);
     canvas.walk = new walk();
     canvas.requestAnimationFrame = function() {
         let player_move = this.walk.move(this._delay);

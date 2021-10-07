@@ -10,8 +10,6 @@ function main() {
     canvas = new mcRenderer(document.querySelector("#canvas"), stagedata);
     console.log(canvas);
 
-    canvas.sun.position.set(12000, -4000, 5000);
-    canvas.sun.rotation.set(0, 0, 1.45);
 
     canvas.camera.position.set(0, -780, 6000);
     canvas.animation.add((i) => canvas.camera.position.z += i, 7000, 10);

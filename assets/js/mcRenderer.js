@@ -25,12 +25,6 @@ class mcRenderer {
         /* アンチエイリアス */
         if (config.quality.antialias === "FXAA")
             this.antialiasPass = new THREE.ShaderPass(THREE.FXAAShader);
-        /*
-        else if (config.quality.antialias === "SMAA")
-            this.antialiasPass = new THREE.ShaderPass(THREE.SMAABlendShader); // SMAABlendShader SMAAEdgesShader SMAAWeightsShader
-        else if (config.quality.antialias === "SSAA")
-            this.antialiasPass = new THREE.ShaderPass(THREE.SSAARenderPass);
-        */
         if (["FXAA"].includes(config.quality.antialias))
             this.composer.addPass(this.antialiasPass);
         /* アンビエントオクルージョン */
@@ -79,52 +73,14 @@ class mcRenderer {
             this._scene.add(this._group[name]);
         });
 
-        this.sun = new THREE.DirectionalLight(0xffffff, 1);
-        this._scene.add(this.sun);
-        this.sun.castShadow = true;
-        this.sun.shadow.mapSize.width = 2048 * config.quality.shadow;
-        this.sun.shadow.mapSize.height = 2048 * config.quality.shadow;
-        this.sun.shadow.camera.top = 7000;
-        this.sun.shadow.camera.bottom = -7000;
-        this.sun.shadow.camera.left = 7000;
-        this.sun.shadow.camera.right = -7000;
-        this.sun.shadow.camera.near = 1000;
-        this.sun.shadow.camera.far = 30000;
-        this.sun.shadow.bias = -0.005;
-        this.sun.position.set(0, -15000, 0);
-        this._scene.add(this.sun);
-        this.sunTarget = new THREE.Mesh(new THREE.BoxGeometry(0, 0, 0), new THREE.MeshStandardMaterial());
-        this.sunTarget.position.set(0, -4500, 0);
-        this._scene.add(this.sunTarget);
-        this.sun.target = this.sunTarget;
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.05);
-        this._scene.add(ambientLight);
-
-        if (config.debug) {
-            const helper = new THREE.CameraHelper(this.sun.shadow.camera);
-            this._scene.add(helper);
-        }
     }
     view() {
-        if (this.sun.position.y > -3000) {
-            this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 * this._delay / 0.16);
-            this.sun.rotation.z += 0.001 * this._delay / 0.16;
-        } else {
-            this.sun.translateOnAxis(new THREE.Vector3(1, 0, 0), 12.5 * this._delay / 0.04);
-            this.sun.rotation.z += 0.001 * this._delay / 0.04;
-        }
-
-        this.sun.intensity = (this.sun.position.y + 3000) / 4000;
-        if (this.sun.intensity < 0)
-            this.sun.intensity = 0;
-        else if (this.sun.intensity > 1)
-            this.sun.intensity = 1;
+        Object.keys(this._group).forEach((key) => {
+            if (typeof(this._group[key].requestAnimationFrame) == "function") this._group[key].requestAnimationFrame(this._delay)
+        });
         this.requestAnimationFrame();
         this.animation.renderer(this._delay);
         this.animationRotation.renderer(this._delay);
-        /*
-        this.renderer.render(this._scene, this.camera);
-        */
         this.composer.render();
     }
     mcRendererParent() {
