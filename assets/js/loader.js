@@ -1,42 +1,72 @@
 class loaderClass {
-    constructor(modelpath, loadedfn) {
-        this.loaded = 0;
-        this.len = Object.keys(modelpath).length;
+    constructor(models, loadedfn) {
+        console.log(models);
+        this.models = models;
         this.loadedfn = loadedfn;
-        this.models = {};
-        Object.keys(modelpath).forEach(name => {
-            new THREE.MTLLoader().load(modelpath[name] + ".mtl", materials => {
-                materials.preload();
+        this.len = Object.keys(this.models).length;
+        Object.keys(this.models).forEach(key => {
+            let data = this.models[key];
+            if (data.type == "mtl")
+                new THREE.MTLLoader()
+                .load(data.path,
+                    model => this.loaded(data, model),
+                    xhr => this.loading(data, xhr),
+                    err => this.error(data, err)
+                );
+            else if (data.type == "obj")
                 new THREE.OBJLoader()
-                    .setMaterials(materials)
-                    .load(modelpath[name] + ".obj", model => {
-                            let texture = new THREE.TextureLoader().load(modelpath[name] + "-RGBA.png");
-                            texture.anisotropy = config.quality.anisotropy;
-                            let textureAlpha = new THREE.TextureLoader().load(modelpath[name] + "-Alpha.png");
-                            model.traverse(function(child) {
-                                if (child instanceof THREE.Mesh) {
-                                    child.material.map = texture;
-                                    child.material.alphaMap = textureAlpha;
-                                    child.material.transparent = true;
-                                }
-                            });
-                            this.models[name] = model;
-                            this.check();
-                        },
-                        xhr => {
-                            document.querySelector("#loading-percent").textContent = Math.floor(xhr.loaded / xhr.total * 100) + "%";
-                        },
-                        err => {
-                            document.querySelector("#loading-percent").textContent = "エラーが発生しました";
-                            console.log(err);
-                        }
-                    );
-            });
+                .load(data.path,
+                    model => this.loaded(data, model),
+                    xhr => this.loading(data, xhr),
+                    err => this.error(data, err)
+                );
+            else if (data.type == "mcloder")
+                new THREE.MTLLoader().load(data.path + ".mtl", materials => {
+                    materials.preload();
+                    new THREE.OBJLoader()
+                        .setMaterials(materials)
+                        .load(data.path + ".obj",
+                            model => this.loaded(data, model),
+                            xhr => this.loading(data, xhr),
+                            err => this.error(data, err)
+                        );
+                })
+            else if (data.type == "texture")
+                new THREE.TextureLoader()
+                .load(data.path,
+                    model => this.loaded(data, model),
+                    xhr => this.loading(data, xhr),
+                    err => this.error(data, err)
+                );
         });
     }
+    loaded(data, model) {
+        data.model = model;
+        this.check();
+    }
+    loading(data, xhr) {
+        data.loaded = xhr.loaded;
+        data.total = xhr.total;
+        this.view();
+    }
+    view() {
+        let loaded = 0;
+        let total = 0;
+        Object.keys(this.models).forEach(key => {
+            let data = this.models[key];
+            loaded += data.loaded == undefined ? 0 : data.loaded;
+            total += data.total == undefined ? 0 : data.total;
+        });
+        document.querySelector("#loading-percent").textContent = Math.floor(loaded / total * 100) + "%";
+    }
+    error(data, err) {
+        document.querySelector("#loading-percent").textContent = "エラーが発生しました";
+        console.error(err);
+    }
     check() {
-        this.loaded++;
-        if (this.loaded == this.len) {
+        this.len--;
+        console.log(this.len);
+        if (this.len <= 0) {
             document.querySelector("#loading").innerHTML = ""
             try {
                 this.loadedfn();
@@ -45,14 +75,7 @@ class loaderClass {
             }
         }
     }
-    sceneClone(name) {
-        let clone = this.models[name].scene.clone();
-        clone.name = name;
-        return clone;
-    }
-    clone(name) {
-        let clone = this.models[name].clone();
-        clone.name = name;
-        return clone;
+    get(name) {
+        return this.models[name].model;
     }
 }

@@ -1,7 +1,18 @@
 window.addEventListener("DOMContentLoaded",
     function() {
         loader = new loaderClass({
-            "main": "assets/models/main/main",
+            "main": {
+                "type": "mcloder",
+                "path": "assets/models/main/main",
+            },
+            "main-RGBA": {
+                "type": "texture",
+                "path": "assets/models/main/main-RGBA.png",
+            },
+            "main-Alpha": {
+                "type": "texture",
+                "path": "assets/models/main/main-Alpha.png",
+            }
         }, main);
     });
 
@@ -9,7 +20,6 @@ function main() {
 
     canvas = new mcRenderer(document.querySelector("#canvas"), stagedata);
     console.log(canvas);
-
 
     canvas.camera.position.set(0, -780, 6000);
     canvas.animation.add((i) => canvas.camera.position.z += i, 7000, 10);

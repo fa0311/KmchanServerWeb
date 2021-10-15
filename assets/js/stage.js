@@ -2,15 +2,16 @@ var stagedata = {
     "main": {
         "load": (scene) => {
             {
-                const model = loader.clone("main");
+                const model = loader.get("main");
+                let textureAlpha = loader.get("main-Alpha");
                 model.children.forEach(function(mesh) {
-                    // mesh.material.side = THREE.DoubleSide;
-
+                    mesh.material.map.anisotropy = config.quality.anisotropy;
+                    mesh.material.alphaMap = textureAlpha;
+                    mesh.material.transparent = true;
                     if (["Stationary_Water"].includes(mesh.name)) {
                         mesh.material.transparent = true;
                         mesh.material.opacity = 0.5;
                     }
-
                     if (["Campfire"].includes(mesh.name))
                         mesh.material.emissive = {
                             r: 0,
@@ -19,7 +20,6 @@ var stagedata = {
                         };
                     else if (["Grass", "Chest", "Poppy", "Dandelion"].includes(mesh.name))
                         mesh.visible = false;
-
                     if (mesh.isMesh) {
                         mesh.receiveShadow = true;
                         mesh.castShadow = true;
